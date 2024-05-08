@@ -1,0 +1,44 @@
+networks:
+  net:
+    external: false
+
+volumes:
+  postgres-db:
+    external: false
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: db
+    env_file:
+      - .env.db
+    environment:
+      - POSTGRES_INITDB_ARGS=--auth-host=md5 --auth-local=trust
+    healthcheck:
+      # Prueba de salud para el contenedor
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d # Scripts que se ejecutan solamente al iniciar por primera vez el servidor
+      - ./datos:/datos
+    networks:
+      - net
+
+  superset:
+    image: apache/superset
+    container_name: superset
+    #restart: always
+    environment:
+      - SUPERSET_SECRET_KEY=your_secret_key_here
+    ports:
+      - 80:8088
+    depends_on:
+      db:
+        condition: service_healthy # Aguarda hasta que la base de datos este funcionando correctamente
+    networks:
+      - net

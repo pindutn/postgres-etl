@@ -1,0 +1,8 @@
+{
+  "python.defaultInterpreterPath": "/home/user/.virtualenvs/djangodev/bin/python",
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/*.pyc": true
+  },
+  "cSpell.language": "en,es,es-ES"
+}
