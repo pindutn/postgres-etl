@@ -2,7 +2,9 @@
 Borro las tablas si existen
 */
 DROP TABLE IF EXISTS public.dengue;
+
 DROP TABLE IF EXISTS public.departamento;
+
 DROP TABLE IF EXISTS public.provincia;
 
 /* Creo las tablas para la base de datos definitiva, respetando todas las formas normales
@@ -44,10 +46,18 @@ CREATE TABLE public.provincia (
 Agrego las restricciones de clave primaria y foránea a las tablas
 */
 ALTER TABLE public.dengue ADD CONSTRAINT pk_dengue PRIMARY KEY (id);
-ALTER TABLE public.provincia ADD CONSTRAINT pk_provincia PRIMARY KEY (id);
-ALTER TABLE public.departamento ADD CONSTRAINT pk_departamento PRIMARY KEY (id);
-ALTER TABLE public.departamento ADD CONSTRAINT fk_departamento_provincia FOREIGN KEY (provincia_id) REFERENCES provincia(id);
-ALTER TABLE public.dengue ADD CONSTRAINT fk_dengue_departamento FOREIGN KEY (departamento_id) REFERENCES departamento(id);
+
+ALTER TABLE public.provincia
+ADD CONSTRAINT pk_provincia PRIMARY KEY (id);
+
+ALTER TABLE public.departamento
+ADD CONSTRAINT pk_departamento PRIMARY KEY (id);
+
+ALTER TABLE public.departamento
+ADD CONSTRAINT fk_departamento_provincia FOREIGN KEY (provincia_id) REFERENCES provincia (id);
+
+ALTER TABLE public.dengue
+ADD CONSTRAINT fk_dengue_departamento FOREIGN KEY (departamento_id) REFERENCES departamento (id);
 
 /*
 Creo las tablas temporales para cargar los datos
@@ -93,31 +103,92 @@ CREATE TEMPORARY TABLE temp_dengue (
 /*
 Cargo los datos en las tablas temporales
 */
-COPY provincias_temp FROM '/datos/provincias.csv' DELIMITER ',' CSV HEADER;
-INSERT INTO public.provincia (id, nombre, nombre_completo, centroide_lat, centroide_lon, categoria)
-SELECT id::INTEGER, nombre, nombre_completo, centroide_lat, centroide_lon, categoria
+COPY provincias_temp
+FROM '/datos/provincias.csv' DELIMITER ',' CSV HEADER;
+
+INSERT INTO
+    public.provincia (
+        id,
+        nombre,
+        nombre_completo,
+        centroide_lat,
+        centroide_lon,
+        categoria
+    )
+SELECT
+    id::INTEGER,
+    nombre,
+    nombre_completo,
+    centroide_lat,
+    centroide_lon,
+    categoria
 FROM provincias_temp;
 
-COPY temp_departamentos FROM '/datos/departamentos.csv' DELIMITER ',' CSV HEADER;
-INSERT INTO public.departamento (id, nombre, nombre_completo, centroide_lat, centroide_lon, categoria, provincia_id)
-SELECT id::INTEGER, nombre, nombre_completo, centroide_lat, centroide_lon, categoria, provincia_id::INTEGER
+COPY temp_departamentos
+FROM '/datos/departamentos.csv' DELIMITER ',' CSV HEADER;
+
+INSERT INTO
+    public.departamento (
+        id,
+        nombre,
+        nombre_completo,
+        centroide_lat,
+        centroide_lon,
+        categoria,
+        provincia_id
+    )
+SELECT
+    id::INTEGER,
+    nombre,
+    nombre_completo,
+    centroide_lat,
+    centroide_lon,
+    categoria,
+    provincia_id::INTEGER
 FROM temp_departamentos;
 
-COPY temp_dengue FROM '/datos/informacion-publica-dengue-zika-nacional-se-1-a-15-de-2024-2024-04-24.csv' DELIMITER ';' CSV HEADER;
+COPY temp_dengue
+FROM '/datos/informacion-publica-dengue-zika-nacional-se-1-a-15-de-2024-2024-04-24.csv' DELIMITER ';' CSV HEADER;
 
 /*
 Cargo los datos en las tablas definitivas
 */
-INSERT INTO public.provincia (id,nombre)
-SELECT DISTINCT id_prov_indec_residencia, provincia_residencia
+INSERT INTO
+    public.provincia (id, nombre)
+SELECT DISTINCT
+    id_prov_indec_residencia,
+    provincia_residencia
 FROM temp_dengue
-WHERE id_prov_indec_residencia NOT IN (SELECT id FROM public.provincia);
+WHERE
+    id_prov_indec_residencia NOT IN (
+        SELECT id
+        FROM public.provincia
+    );
 
-INSERT INTO public.departamento (id,nombre)
-SELECT DISTINCT id_depto_indec_residencia, departamento_residencia
+INSERT INTO
+    public.departamento (id, nombre)
+SELECT DISTINCT
+    id_depto_indec_residencia,
+    departamento_residencia
 FROM temp_dengue
-WHERE id_depto_indec_residencia NOT IN (SELECT id FROM public.departamento);
+WHERE
+    id_depto_indec_residencia NOT IN (
+        SELECT id
+        FROM public.departamento
+    );
 
-INSERT INTO public.dengue (evento, anio, grupo_etario, cantidad, departamento_id)
-SELECT evento, anio_min, grupo_etario, cantidad, id_depto_indec_residencia
+INSERT INTO
+    public.dengue (
+        evento,
+        anio,
+        grupo_etario,
+        cantidad,
+        departamento_id
+    )
+SELECT
+    evento,
+    anio_min,
+    grupo_etario,
+    cantidad,
+    id_depto_indec_residencia
 FROM temp_dengue;
