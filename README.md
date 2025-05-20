@@ -46,8 +46,56 @@ Este proyecto implementa un proceso ETL (Extract, Transform, Load) para la carga
 El objetivo principal es proporcionar una solución escalable y reproducible para analizar datos de dengue por grupo etario, departamento y provincia, permitiendo la creación de tableros interactivos y gráficos personalizados.
 
 ## **Diagrama Entidad-Relacion**
+Referencia:
+* _ Clave Primaria
+* \# Clave Foranea
+* Una provincia tiene muchos departamentos → relación 1:N
+* Un departamento tiene muchos registros de dengue → también 1:N
 
-![Diagrama Entidad-Relación](datos/der.png)
+Significado:
+* 1 → un único registro en la tabla padre (ej. una provincia)
+* N → muchos registros relacionados en la tabla hija (ej. varios departamentos en esa provincia)
+
+
+             +-----------------+
+             |   provincia     |
+             +-----------------+
+             | _id             |
+             | nombre          |
+             | nombre_completo |
+             | centroide_lat   |
+             | centroide_lon   |
+             | categoria       |
+             +--------+--------+
+                      |
+                      | 1
+                      |
+                      | N
+             +--------v--------+
+             |  departamento   |
+             +-----------------+
+             | _id             |
+             | nombre          |
+             | nombre_completo |
+             | centroide_lat   |
+             | centroide_lon   |
+             | categoria       |
+             | #provincia_id   |
+             +--------+--------+
+                      |
+                      | 1
+                      |
+                      | N
+             +--------v--------+
+             |     dengue      |
+             +-----------------+
+             | _id             |
+             | evento          |
+             | anio            |
+             | grupo_etario    |
+             | cantidad        |
+             | #departamento_id|
+             +-----------------+
 
 ### **Descripción del Modelo**
 
