@@ -45,6 +45,60 @@ Este proyecto implementa un proceso ETL (Extract, Transform, Load) para la carga
 
 El objetivo principal es proporcionar una solución escalable y reproducible para analizar datos de dengue por grupo etario, departamento y provincia, permitiendo la creación de tableros interactivos y gráficos personalizados.
 
+## **Diagrama Entidad-Relacion**
+
+![Diagrama Entidad-Relación](datos/der.png)
+
+### **Descripción del Modelo**
+
+El modelo de datos está compuesto por tres entidades principales: `dengue`, `departamento` y `provincia`. Estas entidades están relacionadas para representar la estructura jerárquica de los datos geográficos y epidemiológicos.
+
+### **Entidades y Atributos**
+
+1. **dengue**  
+   - **Atributos:**  
+     - `id`: Identificador único del registro.  
+     - `evento`: Tipo de evento relacionado con el caso de dengue.  
+     - `anio`: Año en el que ocurrió el caso.  
+     - `grupo_etario`: Grupo etario afectado.  
+     - `cantidad`: Número de casos registrados.  
+     - `departamento_id`: Clave foránea que referencia al departamento donde ocurrió el caso.  
+
+2. **departamento**  
+   - **Atributos:**  
+     - `id`: Identificador único del departamento.  
+     - `nombre`: Nombre del departamento.  
+     - `nombre_completo`: Nombre completo del departamento.  
+     - `centroide_lat`: Latitud del centroide del departamento.  
+     - `centroide_lon`: Longitud del centroide del departamento.  
+     - `categoria`: Categoría administrativa del departamento.  
+     - `provincia_id`: Clave foránea que referencia a la provincia a la que pertenece el departamento.  
+
+3. **provincia**  
+   - **Atributos:**  
+     - `id`: Identificador único de la provincia.  
+     - `nombre`: Nombre de la provincia.  
+     - `nombre_completo`: Nombre completo de la provincia.  
+     - `centroide_lat`: Latitud del centroide de la provincia.  
+     - `centroide_lon`: Longitud del centroide de la provincia.  
+     - `categoria`: Categoría administrativa de la provincia.  
+
+### **Relaciones**
+
+1. **Relación entre `dengue` y `departamento`:**  
+   Cada registro en la tabla `dengue` está asociado a un único departamento mediante el atributo `departamento_id`. Esto permite identificar el lugar específico donde ocurrieron los casos de dengue.  
+
+2. **Relación entre `departamento` y `provincia`:**  
+   Cada departamento pertenece a una única provincia, lo cual se define mediante el atributo `provincia_id`. Esto establece una jerarquía geográfica entre provincias y departamentos.  
+
+### **Cardinalidades**
+
+- **Uno a Muchos (1:N):**  
+  - Una provincia puede contener múltiples departamentos.  
+  - Un departamento puede registrar múltiples casos de dengue.  
+
+Este modelo permite realizar análisis detallados de los casos de dengue a nivel geográfico, facilitando la identificación de patrones y tendencias en diferentes regiones del país.
+
 ## **Características Principales**
 
 - **Infraestructura Contenerizada:** Uso de Docker para simplificar la configuración y despliegue.
