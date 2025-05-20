@@ -281,10 +281,14 @@ ORDER BY "Cantidad de Casos" DESC;
 
 ```
 postgres-etl/
+├── datos/                   # Carpeta para almacenar datasets
+├── python/                  # ETL con python
+├── script/                  # Scripts para la inicialización de la base de datos
+├── sql/                     # Consultas SQL predefinidas
+├── .env.db                  # Variables de entorno
 ├── docker-compose.yml       # Configuración de Docker Compose
 ├── init.sh                  # Script de inicialización
-├── data/                    # Carpeta para almacenar datasets
-├── sql/                     # Consultas SQL predefinidas
+├── LICENSE                  # Licencia 
 └── README.md                # Documentación del proyecto
 ```
 
